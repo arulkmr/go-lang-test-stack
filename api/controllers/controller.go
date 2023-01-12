@@ -6,14 +6,16 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 	"go-lang-test-stack/api/responses"
+	"go-lang-test-stack/api/service"
 
 	"github.com/gorilla/mux"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("TEST - 5  CONT HOME.GO")
+
 	responses.JSON(w, http.StatusOK, "Welcome To REST API")
 
 }
@@ -30,8 +32,7 @@ func CreateLocation(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-
-	locationCreated, err := location.SaveLocation(db.DB.Db)
+	locationCreated, err := service.SaveLocation(&location)
 
 	if err != nil {
 
@@ -44,9 +45,11 @@ func CreateLocation(w http.ResponseWriter, r *http.Request) {
 
 func GetLocations(w http.ResponseWriter, r *http.Request) {
 
-	location := models.Location{}
+	fmt.Println("TEST - 5  GETLOC CONT.GO")
 
-	locations, err := location.FindAllLocations(db.DB.Db)
+	locations, err := service.FindAllLocations()
+	fmt.Println("TEST - 5  GETLOC CONT.GO", locations)
+
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -59,8 +62,7 @@ func GetLocation(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	locId := vars["id"]
 
-	location := models.Location{}
-	locationGotten, err := location.FindLocationByID(db.DB.Db, locId)
+	locationGotten, err := service.FindLocationByID(locId)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -85,7 +87,7 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedLocation, err := location.UpdateALocation(db.DB.Db, locId)
+	updatedLocation, err := service.UpdateALocation(locId, &location)
 	if err != nil {
 
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -98,11 +100,9 @@ func DeleteLocation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	location := models.Location{}
-
 	locId := vars["id"]
 
-	_, err := location.DeleteALocation(db.DB.Db, locId)
+	_, err := service.DeleteALocation(locId)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return

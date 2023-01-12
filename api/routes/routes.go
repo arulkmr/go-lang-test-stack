@@ -12,6 +12,7 @@ import (
 
 func InitializeRoutes(port string) {
 	routes := mux.NewRouter()
+	fmt.Println("TEST - 3  ROUTER.GO")
 
 	// Home Route
 	routes.HandleFunc("/", middlewares.SetMiddlewareJSON(c.Home)).Methods("GET")

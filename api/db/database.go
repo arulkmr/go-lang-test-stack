@@ -2,14 +2,13 @@ package db
 
 import (
 	"fmt"
+	"go-lang-test-stack/api/models"
 	"log"
 
 	"github.com/jinzhu/gorm"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"    //mysql database driver
 	_ "github.com/jinzhu/gorm/dialects/postgres" //postgres database driver
-
-	"go-lang-test-stack/api/models"
 )
 
 type Dbinstance struct {
@@ -19,6 +18,7 @@ type Dbinstance struct {
 var DB Dbinstance
 
 func Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string) {
+	fmt.Println("TEST - 2  DB.GO")
 
 	var err error
 	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DbHost, DbPort, DbLocation, DbName, DbPassword)
