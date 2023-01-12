@@ -3,9 +3,7 @@ package controllers
 import (
 	"fmt"
 	"log"
-	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"    //mysql database driver
@@ -15,8 +13,7 @@ import (
 )
 
 type Server struct {
-	DB     *gorm.DB
-	Router *mux.Router
+	DB *gorm.DB
 }
 
 func (server *Server) Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string) {
@@ -33,12 +30,4 @@ func (server *Server) Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHos
 
 	server.DB.Debug().AutoMigrate(&models.Location{}) //database migration
 
-	server.Router = mux.NewRouter()
-
-	server.initializeRoutes()
-}
-
-func (server *Server) Run(addr string) {
-	fmt.Println("Listening to port 7000")
-	log.Fatal(http.ListenAndServe(addr, server.Router))
 }
