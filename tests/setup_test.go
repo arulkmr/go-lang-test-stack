@@ -13,12 +13,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var server = db.Dbinstance{}
-var locationInstance = models.Location{}
-
 func TestMain(m *testing.M) {
-	var err error
-	err = godotenv.Load(os.ExpandEnv("./../.env"))
+	err := godotenv.Load(os.ExpandEnv("./../.env"))
 	if err != nil {
 		log.Fatalf("Error getting env %v\n", err)
 	}
@@ -35,7 +31,7 @@ func Database() {
 	TestDbDriver := os.Getenv("TEST_DB_DRIVER")
 
 	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", os.Getenv("TEST_DB_HOST"), os.Getenv("TEST_DB_PORT"), os.Getenv("TEST_DB_USER"), os.Getenv("TEST_DB_NAME"), os.Getenv("TEST_DB_PASSWORD"))
-	server.DB, err = gorm.Open(TestDbDriver, DBURL)
+	db.DB.Db, err = gorm.Open(TestDbDriver, DBURL)
 	if err != nil {
 		fmt.Printf("Cannot connect to %s database\n", TestDbDriver)
 		log.Fatal("This is the error:", err)
@@ -46,11 +42,11 @@ func Database() {
 }
 
 func refreshLocationTable() error {
-	err := server.DB.DropTableIfExists(&models.Location{}).Error
+	err := db.DB.Db.DropTableIfExists(&models.Location{}).Error
 	if err != nil {
 		return err
 	}
-	err = server.DB.AutoMigrate(&models.Location{}).Error
+	err = db.DB.Db.AutoMigrate(&models.Location{}).Error
 	if err != nil {
 		return err
 	}
@@ -73,7 +69,7 @@ func seedOneLocation() (models.Location, error) {
 		Long:       100.2,
 	}
 
-	err = server.DB.Model(&models.Location{}).Create(&location).Error
+	err = db.DB.Db.Model(&models.Location{}).Create(&location).Error
 	if err != nil {
 		return models.Location{}, err
 	}
@@ -102,7 +98,7 @@ func seedLocations() ([]models.Location, error) {
 	}
 
 	for i, _ := range locations {
-		err := server.DB.Model(&models.Location{}).Create(&locations[i]).Error
+		err := db.DB.Db.Model(&models.Location{}).Create(&locations[i]).Error
 		if err != nil {
 			return []models.Location{}, err
 		}

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"go-lang-test-stack/api/models"
+	"go-lang-test-stack/api/service"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"gopkg.in/go-playground/assert.v1"
@@ -24,7 +25,7 @@ func TestSaveLocation(t *testing.T) {
 		Lat:        10.1,
 		Long:       100.2,
 	}
-	savedLocation, err := newLocation.SaveLocation(server.DB)
+	savedLocation, err := service.SaveLocation(&newLocation)
 	if err != nil {
 		t.Errorf("this is the error getting the locations: %v\n", err)
 		return
@@ -46,7 +47,7 @@ func TestFindAllLocations(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	locations, err := locationInstance.FindAllLocations(server.DB)
+	locations, err := service.FindAllLocations()
 	if err != nil {
 		t.Errorf("this is the error getting the locations: %v\n", err)
 		return
@@ -65,7 +66,7 @@ func TestFindLocationByID(t *testing.T) {
 	if err != nil {
 		log.Fatalf("cannot seed locations table: %v", err)
 	}
-	foundLocation, err := locationInstance.FindLocationByID(server.DB, location.LocationId)
+	foundLocation, err := service.FindLocationByID(location.LocationId)
 	if err != nil {
 		t.Errorf("this is the error getting one location: %v\n", err)
 		return
@@ -94,7 +95,7 @@ func TestUpdateALocation(t *testing.T) {
 		Lat:        10.1,
 		Long:       100.2,
 	}
-	updatedLocation, err := locationUpdate.UpdateALocation(server.DB, location.LocationId)
+	updatedLocation, err := service.UpdateALocation(location.LocationId, &locationUpdate)
 	if err != nil {
 		t.Errorf("this is the error updating the location: %v\n", err)
 		return
@@ -117,7 +118,7 @@ func TestDeleteALocation(t *testing.T) {
 		log.Fatalf("Cannot seed location: %v\n", err)
 	}
 
-	isDeleted, err := locationInstance.DeleteALocation(server.DB, location.LocationId)
+	isDeleted, err := service.DeleteALocation(location.LocationId)
 	if err != nil {
 		t.Errorf("this is the error updating the location: %v\n", err)
 		return

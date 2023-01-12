@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 
@@ -11,16 +10,13 @@ import (
 
 func SaveLocation(l *models.Location) (*models.Location, error) {
 	l.LocationId = l.GenerateId()
-	fmt.Println("dsdsdssds", l)
 	_ = db.DB.Db.Debug().Create(&l).Error
 	return l, nil
 }
 
 func FindAllLocations() (*[]models.Location, error) {
-	fmt.Println("TEST - 5  SERVICE.GO")
 
 	location := []models.Location{}
-	fmt.Println("TEST - 5  SERVICE.GO", location)
 
 	err := db.DB.Db.Debug().Model(&models.Location{}).Limit(100).Find(&location).Error
 	if err != nil {

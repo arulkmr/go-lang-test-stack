@@ -14,7 +14,6 @@ import (
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("TEST - 5  CONT HOME.GO")
 
 	responses.JSON(w, http.StatusOK, "Welcome To REST API")
 
@@ -45,10 +44,7 @@ func CreateLocation(w http.ResponseWriter, r *http.Request) {
 
 func GetLocations(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("TEST - 5  GETLOC CONT.GO")
-
 	locations, err := service.FindAllLocations()
-	fmt.Println("TEST - 5  GETLOC CONT.GO", locations)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
