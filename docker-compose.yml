@@ -1,0 +1,40 @@
+version: '3'
+services:
+  app:
+    container_name: location_service
+    build: .
+    ports: 
+      - 7000:7000 
+    restart: on-failure
+    volumes:
+      - api:/usr/src/app/
+    depends_on:
+      - postgres
+    networks:
+      - storage
+
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_database
+    environment:
+      - POSTGRES_USER=${DB_USER}  
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST} 
+    ports:
+      - '5432:5432'
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - storage
+
+volumes:
+  api:
+  database_postgres:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  storage:
+    driver: bridge
+
