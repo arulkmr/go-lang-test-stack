@@ -66,6 +66,7 @@ func seedOneLocation() (models.Location, error) {
 	}
 
 	location := models.Location{
+		LocationId: "loc1",
 		CustomerId: "hexauuidcustoomer1&9",
 		Address:    "SBO Bangalore",
 		Lat:        10.1,

@@ -10,14 +10,14 @@ import (
 
 var locations = []models.Location{
 	{
-		LocationId: "LocId229",
+		LocationId: "loc10cf55e068211d2d4e14e914ffc37",
 		CustomerId: "hexauuidcustoomer1&9",
 		Address:    "SBO Bangalore",
 		Lat:        10.1,
 		Long:       100.2,
 	},
 	{
-		LocationId: "LocId334",
+		LocationId: "loc20cf55e068211d2d4e14e914ffc37",
 		CustomerId: "hexauuidcustoomer29&i",
 		Address:    "Shell Chennai",
 		Lat:        2.21,
