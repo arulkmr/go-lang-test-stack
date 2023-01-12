@@ -6,18 +6,19 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 	"go-lang-test-stack/api/responses"
 
 	"github.com/gorilla/mux"
 )
 
-func (server *Server) Home(w http.ResponseWriter, r *http.Request) {
+func Home(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, "Welcome To REST API")
 
 }
 
-func (server *Server) CreateLocation(w http.ResponseWriter, r *http.Request) {
+func CreateLocation(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -30,7 +31,7 @@ func (server *Server) CreateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	locationCreated, err := location.SaveLocation(server.DB)
+	locationCreated, err := location.SaveLocation(db.DB.Db)
 
 	if err != nil {
 
@@ -41,11 +42,11 @@ func (server *Server) CreateLocation(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, locationCreated)
 }
 
-func (server *Server) GetLocations(w http.ResponseWriter, r *http.Request) {
+func GetLocations(w http.ResponseWriter, r *http.Request) {
 
 	location := models.Location{}
 
-	locations, err := location.FindAllLocations(server.DB)
+	locations, err := location.FindAllLocations(db.DB.Db)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
@@ -53,13 +54,13 @@ func (server *Server) GetLocations(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, locations)
 }
 
-func (server *Server) GetLocation(w http.ResponseWriter, r *http.Request) {
+func GetLocation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	locId := vars["id"]
 
 	location := models.Location{}
-	locationGotten, err := location.FindLocationByID(server.DB, locId)
+	locationGotten, err := location.FindLocationByID(db.DB.Db, locId)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -67,7 +68,7 @@ func (server *Server) GetLocation(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, locationGotten)
 }
 
-func (server *Server) UpdateLocation(w http.ResponseWriter, r *http.Request) {
+func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	locId := vars["id"]
@@ -84,7 +85,7 @@ func (server *Server) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedLocation, err := location.UpdateALocation(server.DB, locId)
+	updatedLocation, err := location.UpdateALocation(db.DB.Db, locId)
 	if err != nil {
 
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -93,7 +94,7 @@ func (server *Server) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, updatedLocation)
 }
 
-func (server *Server) DeleteLocation(w http.ResponseWriter, r *http.Request) {
+func DeleteLocation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
@@ -101,7 +102,7 @@ func (server *Server) DeleteLocation(w http.ResponseWriter, r *http.Request) {
 
 	locId := vars["id"]
 
-	_, err := location.DeleteALocation(server.DB, locId)
+	_, err := location.DeleteALocation(db.DB.Db, locId)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return

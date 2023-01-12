@@ -6,14 +6,14 @@ import (
 	"os"
 	"testing"
 
-	"go-lang-test-stack/api/controllers"
+	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 )
 
-var server = controllers.Server{}
+var server = db.Dbinstance{}
 var locationInstance = models.Location{}
 
 func TestMain(m *testing.M) {

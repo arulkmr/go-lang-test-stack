@@ -1,4 +1,4 @@
-package controllers
+package db
 
 import (
 	"fmt"
@@ -12,15 +12,17 @@ import (
 	"go-lang-test-stack/api/models"
 )
 
-type Server struct {
-	DB *gorm.DB
+type Dbinstance struct {
+	Db *gorm.DB
 }
 
-func (server *Server) Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string) {
+var DB Dbinstance
+
+func Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string) {
 
 	var err error
 	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DbHost, DbPort, DbLocation, DbName, DbPassword)
-	server.DB, err = gorm.Open(Dbdriver, DBURL)
+	db, err := gorm.Open(Dbdriver, DBURL)
 	if err != nil {
 		fmt.Printf("Cannot connect to %s database", Dbdriver)
 		log.Fatal("This is the error:", err)
@@ -28,6 +30,9 @@ func (server *Server) Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHos
 		fmt.Printf("We are connected to the %s database", Dbdriver)
 	}
 
-	server.DB.Debug().AutoMigrate(&models.Location{}) //database migration
+	db.Debug().AutoMigrate(&models.Location{})
 
+	DB = Dbinstance{
+		Db: db,
+	}
 }
