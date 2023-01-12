@@ -41,7 +41,7 @@ func UpdateALocation(locId string, l *models.Location) (*models.Location, error)
 
 	var location = models.Location{}
 
-	dd := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).UpdateColumns(
+	data := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).UpdateColumns(
 		map[string]interface{}{
 			"Address":    l.Address,
 			"CustomerId": l.CustomerId,
@@ -49,8 +49,8 @@ func UpdateALocation(locId string, l *models.Location) (*models.Location, error)
 			"Lat":        l.Lat,
 		},
 	)
-	if dd.Error != nil {
-		return &models.Location{}, dd.Error
+	if data.Error != nil {
+		return &models.Location{}, data.Error
 	}
 	// This is the display the updated location
 	err := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&location).Error
@@ -62,10 +62,10 @@ func UpdateALocation(locId string, l *models.Location) (*models.Location, error)
 
 func DeleteALocation(locId string) (int64, error) {
 
-	dd := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).Delete(&models.Location{})
+	data := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).Delete(&models.Location{})
 
-	if dd.Error != nil {
-		return 0, dd.Error
+	if data.Error != nil {
+		return 0, data.Error
 	}
-	return dd.RowsAffected, nil
+	return data.RowsAffected, nil
 }

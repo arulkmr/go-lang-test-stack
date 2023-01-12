@@ -10,13 +10,19 @@ import (
 )
 
 type Location struct {
-	LocationId string    `json:"locationid" gorm:"primaryKey"`
-	CustomerId string    `gorm:"size:100;not null;" json:"customerid"`
-	Address    string    `gorm:"size:100;not null;" json:"address"`
-	Lat        float64   `gorm:"size:100;not null;" json:"lat"`
-	Long       float64   `gorm:"size:100;not null;" json:"long"`
-	CreatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	LocationId       string  `json:"locationid" gorm:"primaryKey"`
+	CustomerId       string  `gorm:"size:100;not null;" json:"customerid"`
+	Address          string  `gorm:"size:100;not null;" json:"address"`
+	Lat              float64 `gorm:"size:100;not null;" json:"lat"`
+	Long             float64 `gorm:"size:100;not null;" json:"long"`
+	ConnectorDetaild Connector
+	CreatedAt        time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt        time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+}
+
+type Connector struct {
+	ConnectorName string `gorm:"size:100;not null;" json:"connectorname"`
+	ConnectorType string `gorm:"size:100;not null;" json:"connectortype"`
 }
 
 func (c Location) GenerateId() string {
