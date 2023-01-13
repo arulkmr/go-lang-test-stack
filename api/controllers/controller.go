@@ -13,13 +13,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func Home(w http.ResponseWriter, r *http.Request) {
+type Service struct {
+	service.ServiceLogic
+}
+
+type ControllerInterface interface {
+	Home(w http.ResponseWriter, r *http.Request)
+	CreateLocation(w http.ResponseWriter, r *http.Request)
+	GetLocations(w http.ResponseWriter, r *http.Request)
+	GetLocation(w http.ResponseWriter, r *http.Request)
+	UpdateLocation(w http.ResponseWriter, r *http.Request)
+	DeleteLocation(w http.ResponseWriter, r *http.Request)
+}
+
+func (s *Service) Home(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusOK, "Welcome To REST API")
 
 }
 
-func CreateLocation(w http.ResponseWriter, r *http.Request) {
+func (s *Service) CreateLocation(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -31,7 +44,7 @@ func CreateLocation(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	locationCreated, err := service.SaveLocation(&location)
+	locationCreated, err := s.SaveLocation(&location)
 
 	if err != nil {
 
@@ -42,9 +55,9 @@ func CreateLocation(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, locationCreated)
 }
 
-func GetLocations(w http.ResponseWriter, r *http.Request) {
+func (s *Service) GetLocations(w http.ResponseWriter, r *http.Request) {
 
-	locations, err := service.FindAllLocations()
+	locations, err := s.FindAllLocations()
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -53,12 +66,12 @@ func GetLocations(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, locations)
 }
 
-func GetLocation(w http.ResponseWriter, r *http.Request) {
+func (s *Service) GetLocation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	locId := vars["id"]
 
-	locationGotten, err := service.FindLocationByID(locId)
+	locationGotten, err := s.FindLocationByID(locId)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -66,7 +79,7 @@ func GetLocation(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, locationGotten)
 }
 
-func UpdateLocation(w http.ResponseWriter, r *http.Request) {
+func (s *Service) UpdateLocation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	locId := vars["id"]
@@ -83,7 +96,7 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedLocation, err := service.UpdateALocation(locId, &location)
+	updatedLocation, err := s.UpdateALocation(locId, location)
 	if err != nil {
 
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -92,17 +105,17 @@ func UpdateLocation(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, updatedLocation)
 }
 
-func DeleteLocation(w http.ResponseWriter, r *http.Request) {
+func (s *Service) DeleteLocation(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
 	locId := vars["id"]
 
-	_, err := service.DeleteALocation(locId)
+	_, err := s.DeleteALocation(locId)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
-	w.Header().Set("Entity", fmt.Sprintf("%s", locId))
+	w.Header().Set("Entity", locId)
 	responses.JSON(w, http.StatusOK, "Location Deleted Successfully")
 }

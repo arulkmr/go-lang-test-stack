@@ -2,27 +2,37 @@ package routes
 
 import (
 	"fmt"
-	c "go-lang-test-stack/api/controllers"
+	"go-lang-test-stack/api/controllers"
 	"go-lang-test-stack/api/middlewares"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
 
-func InitializeRoutes(port string) {
-	routes := mux.NewRouter()
+type RoutesInterface interface {
+	InitializeRoutes()
+}
+type Routes struct {
+	controllers.ControllerInterface
+	router *mux.Router
+}
+
+func (r *Routes) InitializeRoutes() {
+
+	r.router = mux.NewRouter()
 
 	// Home Route
-	routes.HandleFunc("/", middlewares.SetMiddlewareJSON(c.Home)).Methods("GET")
+	r.router.HandleFunc("/", middlewares.SetMiddlewareJSON(r.Home)).Methods("GET")
 
 	//Location Routes
-	routes.HandleFunc("/location", middlewares.SetMiddlewareJSON(c.CreateLocation)).Methods("POST")
-	routes.HandleFunc("/location", middlewares.SetMiddlewareJSON(c.GetLocations)).Methods("GET")
-	routes.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(c.GetLocation)).Methods("GET")
-	routes.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(c.UpdateLocation)).Methods("PUT")
-	routes.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(c.DeleteLocation)).Methods("DELETE")
+	r.router.HandleFunc("/location", middlewares.SetMiddlewareJSON(r.CreateLocation)).Methods("POST")
+	r.router.HandleFunc("/location", middlewares.SetMiddlewareJSON(r.GetLocations)).Methods("GET")
+	r.router.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(r.GetLocation)).Methods("GET")
+	r.router.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(r.UpdateLocation)).Methods("PUT")
+	r.router.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(r.DeleteLocation)).Methods("DELETE")
 
 	fmt.Println("Listening to port 7000")
-	log.Fatal(http.ListenAndServe(port, routes))
+	log.Fatal(http.ListenAndServe(os.Getenv("SERVER_PORT"), r.router))
 }

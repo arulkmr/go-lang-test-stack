@@ -8,26 +8,38 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-func SaveLocation(l *models.Location) (*models.Location, error) {
+type ServiceLogic interface {
+	SaveLocation(l *models.Location) (*models.Location, error)
+	FindAllLocations() (*models.Location, error)
+	FindLocationByID(string) (*models.Location, error)
+	UpdateALocation(id string, l models.Location) (*models.Location, error)
+	DeleteALocation(id string) (int64, error)
+}
+
+type Database struct {
+	db.Dbinstance
+}
+
+func (d *Database) SaveLocation(l *models.Location) (*models.Location, error) {
 	l.LocationId = l.GenerateId()
-	_ = db.DB.Db.Debug().Create(&l).Error
+	_ = d.Db.Debug().Create(&l).Error
 	return l, nil
 }
 
-func FindAllLocations() (*[]models.Location, error) {
+func (d *Database) FindAllLocations() (*[]models.Location, error) {
 
 	location := []models.Location{}
 
-	err := db.DB.Db.Debug().Model(&models.Location{}).Limit(100).Find(&location).Error
+	err := d.Db.Debug().Model(&models.Location{}).Limit(100).Find(&location).Error
 	if err != nil {
 		return &[]models.Location{}, err
 	}
 	return &location, err
 }
 
-func FindLocationByID(locId string) (*models.Location, error) {
+func (d *Database) FindLocationByID(locId string) (*models.Location, error) {
 	var location = models.Location{}
-	err := db.DB.Db.Debug().Model(models.Location{}).Where("location_id = ?", locId).Take(&location).Error
+	err := d.Db.Debug().Model(models.Location{}).Where("location_id = ?", locId).Take(&location).Error
 	if err != nil {
 		return &models.Location{}, err
 	}
@@ -37,11 +49,11 @@ func FindLocationByID(locId string) (*models.Location, error) {
 	return &location, err
 }
 
-func UpdateALocation(locId string, l *models.Location) (*models.Location, error) {
+func (d *Database) UpdateALocation(locId string, l *models.Location) (*models.Location, error) {
 
 	var location = models.Location{}
 
-	data := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).UpdateColumns(
+	data := d.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).UpdateColumns(
 		map[string]interface{}{
 			"Address":    l.Address,
 			"CustomerId": l.CustomerId,
@@ -53,16 +65,16 @@ func UpdateALocation(locId string, l *models.Location) (*models.Location, error)
 		return &models.Location{}, data.Error
 	}
 	// This is the display the updated location
-	err := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&location).Error
+	err := d.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&location).Error
 	if err != nil {
 		return &models.Location{}, err
 	}
 	return &location, nil
 }
 
-func DeleteALocation(locId string) (int64, error) {
+func (d *Database) DeleteALocation(locId string) (int64, error) {
 
-	data := db.DB.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).Delete(&models.Location{})
+	data := d.Db.Debug().Model(&models.Location{}).Where("location_id = ?", locId).Take(&models.Location{}).Delete(&models.Location{})
 
 	if data.Error != nil {
 		return 0, data.Error
