@@ -23,6 +23,9 @@ func InitializeRoutes(port string) {
 	routes.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(c.UpdateLocation)).Methods("PUT")
 	routes.HandleFunc("/location/{id}", middlewares.SetMiddlewareJSON(c.DeleteLocation)).Methods("DELETE")
 
+	//Loncation Query Handling
+	routes.HandleFunc("/location/search", middlewares.SetMiddlewareJSON(c.LocationQuery)).Methods("POST")
+
 	fmt.Println("Listening to port 7000")
 	log.Fatal(http.ListenAndServe(port, routes))
 }

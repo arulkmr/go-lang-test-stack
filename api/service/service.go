@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 
@@ -68,4 +69,14 @@ func DeleteALocation(locId string) (int64, error) {
 		return 0, data.Error
 	}
 	return data.RowsAffected, nil
+}
+
+func LocationQuery(l *models.LocationQuery) (*[]models.Location, error) {
+	var location = []models.Location{}
+	fmt.Println("filters", l)
+	err := db.DB.Db.Debug().Model(models.Location{}).Where("location_id = ? or customer_id=?", l.SearchbyId, l.SearchbyCustomerId).Take(&location).Error
+	if err != nil {
+		return &[]models.Location{}, err
+	}
+	return &location, err
 }

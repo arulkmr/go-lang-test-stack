@@ -106,3 +106,23 @@ func DeleteLocation(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Entity", fmt.Sprintf("%s", locId))
 	responses.JSON(w, http.StatusOK, "Location Deleted Successfully")
 }
+
+func LocationQuery(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+	}
+	query := models.LocationQuery{}
+	err = json.Unmarshal(body, &query)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	locationCreated, err := service.LocationQuery(&query)
+	fmt.Println("contrl locationCreated", locationCreated)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusCreated, locationCreated)
+}
