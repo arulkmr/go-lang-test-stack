@@ -9,16 +9,6 @@ import (
 	// "go-lang-test-stack/api/db"
 )
 
-type Location struct {
-	LocationId string    `json:"locationid" gorm:"primaryKey"`
-	CustomerId string    `gorm:"size:100;not null;" json:"customerid"`
-	Address    string    `gorm:"size:100;not null;" json:"address"`
-	Lat        float64   `gorm:"size:100;not null;" json:"lat"`
-	Long       float64   `gorm:"size:100;not null;" json:"long"`
-	CreatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
-}
-
 // type Location struct {
 // 	LocationId string    `json:"locationid" gorm:"primaryKey"`
 // 	CustomerId string    `gorm:"size:100;not null;" json:"customerid,omitempty"`
@@ -29,19 +19,39 @@ type Location struct {
 // 	UpdatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 // }
 
-type LocationQuery struct {
-	SearchbyId         string `json:"id,omitempty"`
-	SearchbyCustomerId string `json:"customer_id,omitempty"`
-	Limit              int    `json:"limit,omitempty"`
-	Page               int    `json:"page,omitempty"`
-	Sort               string `json:"sort,omitempty"`
-	TotalPages         int    `json:"total_pages"`
+type Location struct {
+	LocationId   string  `json:"locationid" gorm:"primaryKey"`
+	CustomerId   string  `gorm:"size:100;not null;" json:"customerid"`
+	CustomerName string  `gorm:"size:100;not null;" json:"customername"`
+	LocationName string  `gorm:"size:100;not null;" json:"locationname"`
+	Address      string  `gorm:"size:100;not null;" json:"address"`
+	Lat          float64 `gorm:"size:100;not null;" json:"lat"`
+	Long         float64 `gorm:"size:100;not null;" json:"long"`
+	//Connectors   []Connector
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
-// type Connector struct {
-// 	ConnectorName string `gorm:"size:100;not null;" json:"connectorname,omitempty"`
-// 	ConnectorType string `gorm:"size:100;not null;" json:"connectortype,omitempty"`
-// }
+//	type Connector struct {
+//		ConnectorName string `gorm:"size:100;not null;" json:"connectorname,omitempty"`
+//		ConnectorType string `gorm:"size:100;not null;" json:"connectortype,omitempty"`
+//	}
+type LocationQuery struct {
+	CustomerNames []string `json:"customer_names,omitempty"`
+	LocationNames []string `json:"location_names,omitempty"`
+	Sort          bool     `json:"sort,omitempty"`
+	Limit         int      `json:"limit,omitempty"`
+	Page          int      `json:"page,omitempty"`
+}
+
+type LocationPagination struct {
+	Limit      int          `json:"limit,omitempty"`
+	Page       int          `json:"page,omitempty"`
+	Sort       string       `json:"sort,omitempty"`
+	TotalRows  int64        `json:"total_rows"`
+	TotalPages int          `json:"total_pages"`
+	Locations  *[]*Location `json:"connectors"`
+}
 
 func (c Location) GenerateId() string {
 	keyString := fmt.Sprintf("%s-%s-%s", c.CustomerId, c.Address, c.Address)
@@ -61,4 +71,22 @@ func GetMD5Hash(text string) string {
 	// make hash
 	hash := md5.Sum([]byte(string(b) + text))
 	return hex.EncodeToString(hash[:])
+}
+
+func (loc *LocationPagination) GetOffset() int {
+	return (loc.GetPage() - 1) * loc.GetLimit()
+}
+
+func (loc *LocationPagination) GetLimit() int {
+	if loc.Limit == 0 {
+		loc.Limit = 30
+	}
+	return loc.Limit
+}
+
+func (loc *LocationPagination) GetPage() int {
+	if loc.Page == 0 {
+		loc.Page = 1
+	}
+	return loc.Page
 }

@@ -9,8 +9,9 @@ import (
 	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 
-	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func TestMain(m *testing.M) {
@@ -31,7 +32,7 @@ func Database() {
 	TestDbDriver := os.Getenv("TEST_DB_DRIVER")
 
 	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", os.Getenv("TEST_DB_HOST"), os.Getenv("TEST_DB_PORT"), os.Getenv("TEST_DB_USER"), os.Getenv("TEST_DB_NAME"), os.Getenv("TEST_DB_PASSWORD"))
-	db.DB.Db, err = gorm.Open(TestDbDriver, DBURL)
+	db.DB.Db, err = gorm.Open(postgres.Open(DBURL), &gorm.Config{})
 	if err != nil {
 		fmt.Printf("Cannot connect to %s database\n", TestDbDriver)
 		log.Fatal("This is the error:", err)
@@ -42,11 +43,11 @@ func Database() {
 }
 
 func refreshLocationTable() error {
-	err := db.DB.Db.DropTableIfExists(&models.Location{}).Error
+	err := db.DB.Db.Delete(&models.Location{}).Error
 	if err != nil {
 		return err
 	}
-	err = db.DB.Db.AutoMigrate(&models.Location{}).Error
+	err = db.DB.Db.AutoMigrate(&models.Location{})
 	if err != nil {
 		return err
 	}

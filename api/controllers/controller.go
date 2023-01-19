@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -107,8 +108,29 @@ func DeleteLocation(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, "Location Deleted Successfully")
 }
 
+// func LocationQuery(w http.ResponseWriter, r *http.Request) {
+// 	body, err := ioutil.ReadAll(r.Body)
+// 	if err != nil {
+// 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+// 	}
+// 	query := models.LocationQuery{}
+// 	err = json.Unmarshal(body, &query)
+// 	if err != nil {
+// 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+// 		return
+// 	}
+// 	locationCreated, err := service.LocationQuery(&query)
+// 	fmt.Println("contrl locationCreated", locationCreated)
+// 	if err != nil {
+// 		responses.ERROR(w, http.StatusInternalServerError, err)
+// 		return
+// 	}
+// 	responses.JSON(w, http.StatusCreated, locationCreated)
+// }
+
 func LocationQuery(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
@@ -118,11 +140,15 @@ func LocationQuery(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	locationCreated, err := service.LocationQuery(&query)
-	fmt.Println("contrl locationCreated", locationCreated)
+	locations, err := service.LocationQuery(query)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.JSON(w, http.StatusCreated, locationCreated)
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(locations)
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
 }

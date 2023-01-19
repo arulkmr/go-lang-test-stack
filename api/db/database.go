@@ -5,10 +5,10 @@ import (
 	"go-lang-test-stack/api/models"
 	"log"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
-	_ "github.com/jinzhu/gorm/dialects/mysql"    //mysql database driver
-	_ "github.com/jinzhu/gorm/dialects/postgres" //postgres database driver
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type Dbinstance struct {
@@ -20,7 +20,7 @@ var DB Dbinstance
 func Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string) {
 	var err error
 	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DbHost, DbPort, DbLocation, DbName, DbPassword)
-	db, err := gorm.Open(Dbdriver, DBURL)
+	db, err := gorm.Open(postgres.Open(DBURL), &gorm.Config{})
 	if err != nil {
 		fmt.Printf("Cannot connect to %s database", Dbdriver)
 		log.Fatal("This is the error:", err)
