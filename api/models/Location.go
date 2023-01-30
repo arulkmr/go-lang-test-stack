@@ -16,7 +16,7 @@ type Location struct {
 	Address      string  `gorm:"size:100;not null;" json:"address"`
 	Lat          float64 `gorm:"size:100;not null;" json:"lat"`
 	Long         float64 `gorm:"size:100;not null;" json:"long"`
-	//Connectors   []Connector `gorm:"foreignKey:LocationId"`
+	//Connectors   []Connector
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }

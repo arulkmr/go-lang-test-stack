@@ -17,14 +17,9 @@ func SaveLocation(l *models.Location) (*models.Location, error) {
 	if err != nil {
 		return l, err
 	}
-	// Broadcast connector created message over Kafka
+
 	jsonPayload, _ := json.Marshal(&l)
 	topic := "location"
-	// db.DB.KafkaProducer.Produce(&kafka.Message{
-	// 	TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: 1},
-	// 	Value:          []byte(jsonPayload),
-	// }, nil)
-
 	delivery_chan := make(chan kafka.Event, 10000)
 	err = db.DB.KafkaProducer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{

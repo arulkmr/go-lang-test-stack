@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go-lang-test-stack/api/models"
 	"log"
-	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -34,16 +33,15 @@ func Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string)
 
 	db.Debug().AutoMigrate(&models.Location{})
 
-	// setup Kafka producer
 	producer, _ := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
+		"bootstrap.servers": "kafka-server:29092",
 		"client.id":         "1000",
 		"acks":              "all",
 	})
 
 	consumer, _ := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
-		"group.id":          "myGroup",
+		"bootstrap.servers": "kafka-server:29092",
+		"group.id":          "locGroup",
 		"auto.offset.reset": "earliest",
 	})
 
