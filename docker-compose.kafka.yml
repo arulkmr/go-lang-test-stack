@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  kafka-server:
+    image: bitnami/kafka:2.8.1
+    restart: unless-stopped
+    environment:
+        KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper-server:2181
+        ALLOW_PLAINTEXT_LISTENER: "yes"
+        KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+        KAFKA_CFG_LISTENERS: INSIDE://:29092,OUTSIDE://:9092
+        KAFKA_CFG_ADVERTISED_LISTENERS: INSIDE://kafka-server:29092,OUTSIDE://localhost:9092
+        KAFKA_CFG_INTER_BROKER_LISTENER_NAME: INSIDE
+        KAFKA_CFG_MESSAGE_MAX_BYTES: 2000024
+    ports:
+        - "9092:9092"
+    volumes:
+        - kafka-data:/bitnami/kafka
+    depends_on:
+        - zookeeper-server
+    networks:
+        - storage
+
+  zookeeper-server:
+    image: bitnami/zookeeper:3.7.0
+    restart: unless-stopped
+    ports:
+        - "2181:2181"
+    environment:
+        - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+        - zookeeper-data:/bitnami/zookeeper
+    networks:
+        - storage
+  
+volumes:
+  zookeeper-data:
+  kafka-data:
+
+networks:
+  storage:
+    name: storage
+    driver: bridge

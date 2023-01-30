@@ -1,16 +1,43 @@
 package service
 
 import (
+	"encoding/json"
+	"fmt"
 	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 	"math"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"gorm.io/gorm"
 )
 
 func SaveLocation(l *models.Location) (*models.Location, error) {
 	l.LocationId = l.GenerateId()
-	_ = db.DB.Db.Debug().Create(&l).Error
+	err := db.DB.Db.Debug().Create(&l).Error
+	if err != nil {
+		return l, err
+	}
+	// Broadcast connector created message over Kafka
+	jsonPayload, _ := json.Marshal(&l)
+	topic := "location"
+	// db.DB.KafkaProducer.Produce(&kafka.Message{
+	// 	TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: 1},
+	// 	Value:          []byte(jsonPayload),
+	// }, nil)
+
+	delivery_chan := make(chan kafka.Event, 10000)
+	err = db.DB.KafkaProducer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{
+			Topic:     &topic,
+			Partition: kafka.PartitionAny,
+		},
+		Value: []byte(jsonPayload)},
+		delivery_chan,
+	)
+	if err != nil {
+		fmt.Println("Error producing Kafka message: " + err.Error())
+	}
+
 	return l, nil
 }
 
@@ -43,7 +70,7 @@ func UpdateALocation(locId string, l *models.Location) (*models.Location, error)
 			"Address":      l.Address,
 			"CustomerId":   l.CustomerId,
 			"CustomerName": l.CustomerName,
-			"LOcationName": l.LocationName,
+			"LocationName": l.LocationName,
 			"Long":         l.Long,
 			"Lat":          l.Lat,
 		},

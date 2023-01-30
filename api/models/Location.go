@@ -6,18 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
-	// "go-lang-test-stack/api/db"
 )
-
-// type Location struct {
-// 	LocationId string    `json:"locationid" gorm:"primaryKey"`
-// 	CustomerId string    `gorm:"size:100;not null;" json:"customerid,omitempty"`
-// 	Address    string    `gorm:"size:100;not null;" json:"address,omitempty"`
-// 	Lat        float64   `gorm:"size:100;not null;" json:"lat,omitempty"`
-// 	Long       float64   `gorm:"size:100;not null;" json:"long,omitempty"`
-// 	CreatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-// 	UpdatedAt  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
-// }
 
 type Location struct {
 	LocationId   string  `json:"locationid" gorm:"primaryKey"`
@@ -27,15 +16,15 @@ type Location struct {
 	Address      string  `gorm:"size:100;not null;" json:"address"`
 	Lat          float64 `gorm:"size:100;not null;" json:"lat"`
 	Long         float64 `gorm:"size:100;not null;" json:"long"`
-	//Connectors   []Connector
+	//Connectors   []Connector `gorm:"foreignKey:LocationId"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
-//	type Connector struct {
-//		ConnectorName string `gorm:"size:100;not null;" json:"connectorname,omitempty"`
-//		ConnectorType string `gorm:"size:100;not null;" json:"connectortype,omitempty"`
-//	}
+type Connector struct {
+	ConnectorName string `gorm:"size:100;not null;" json:"connectorname,omitempty"`
+	ConnectorType string `gorm:"size:100;not null;" json:"connectortype,omitempty"`
+}
 type LocationQuery struct {
 	CustomerNames []string `json:"customer_names,omitempty"`
 	LocationNames []string `json:"location_names,omitempty"`

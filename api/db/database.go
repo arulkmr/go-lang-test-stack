@@ -4,15 +4,19 @@ import (
 	"fmt"
 	"go-lang-test-stack/api/models"
 	"log"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type Dbinstance struct {
-	Db *gorm.DB
+	Db            *gorm.DB
+	KafkaProducer *kafka.Producer
+	KafkaConsumer *kafka.Consumer
 }
 
 var DB Dbinstance
@@ -30,7 +34,22 @@ func Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string)
 
 	db.Debug().AutoMigrate(&models.Location{})
 
+	// setup Kafka producer
+	producer, _ := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
+		"client.id":         "1000",
+		"acks":              "all",
+	})
+
+	consumer, _ := kafka.NewConsumer(&kafka.ConfigMap{
+		"bootstrap.servers": os.Getenv("KAFKA_BOOTSTRAP_SERVERS"),
+		"group.id":          "myGroup",
+		"auto.offset.reset": "earliest",
+	})
+
 	DB = Dbinstance{
-		Db: db,
+		Db:            db,
+		KafkaProducer: producer,
+		KafkaConsumer: consumer,
 	}
 }
