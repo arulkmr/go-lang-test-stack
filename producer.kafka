@@ -1,5 +1,0 @@
-PRODUCER non-keyed-json-message
-topic: location
-{
-    "type": "my_test_event"
-}

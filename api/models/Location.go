@@ -6,26 +6,31 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Location struct {
+	gorm.Model
 	LocationId   string  `json:"locationid" gorm:"primaryKey"`
-	CustomerId   string  `gorm:"size:100;not null;" json:"customerid"`
-	CustomerName string  `gorm:"size:100;not null;" json:"customername"`
-	LocationName string  `gorm:"size:100;not null;" json:"locationname"`
-	Address      string  `gorm:"size:100;not null;" json:"address"`
-	Lat          float64 `gorm:"size:100;not null;" json:"lat"`
-	Long         float64 `gorm:"size:100;not null;" json:"long"`
-	//Connectors   []Connector
-	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	CustomerId   string  `gorm:"size:100;not null;" json:"customerid,omitempty"`
+	CustomerName string  `gorm:"size:100;not null;" json:"customername,omitempty"`
+	LocationName string  `gorm:"size:100;not null;" json:"locationname,omitempty"`
+	Address      string  `gorm:"size:100;not null;" json:"address,omitempty"`
+	Lat          float64 `gorm:"size:100;not null;" json:"lat,omitempty"`
+	Long         float64 `gorm:"size:100;not null;" json:"long,omitempty"`
+	Connectors   []Connector
+	CreatedAt    time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt    time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 type Connector struct {
+	gorm.Model
 	ConnectorName string `gorm:"size:100;not null;" json:"connectorname,omitempty"`
 	ConnectorType string `gorm:"size:100;not null;" json:"connectortype,omitempty"`
 }
 type LocationQuery struct {
+	gorm.Model
 	CustomerNames []string `json:"customer_names,omitempty"`
 	LocationNames []string `json:"location_names,omitempty"`
 	Sort          bool     `json:"sort,omitempty"`
@@ -34,6 +39,7 @@ type LocationQuery struct {
 }
 
 type LocationPagination struct {
+	gorm.Model
 	Limit      int          `json:"limit,omitempty"`
 	Page       int          `json:"page,omitempty"`
 	Sort       string       `json:"sort,omitempty"`
