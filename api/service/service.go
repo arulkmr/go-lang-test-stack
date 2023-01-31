@@ -1,13 +1,11 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-lang-test-stack/api/db"
 	"go-lang-test-stack/api/models"
 	"math"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"gorm.io/gorm"
 )
 
@@ -18,17 +16,17 @@ func SaveLocation(l *models.Location) (*models.Location, error) {
 		return l, err
 	}
 
-	jsonPayload, _ := json.Marshal(&l)
-	topic := "location"
-	delivery_chan := make(chan kafka.Event, 10000)
-	err = db.DB.KafkaProducer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{
-			Topic:     &topic,
-			Partition: kafka.PartitionAny,
-		},
-		Value: []byte(jsonPayload)},
-		delivery_chan,
-	)
+	// jsonPayload, _ := json.Marshal(&l)
+	// topic := "location"
+	// delivery_chan := make(chan kafka.Event, 10000)
+	// err = db.DB.KafkaProducer.Produce(&kafka.Message{
+	// 	TopicPartition: kafka.TopicPartition{
+	// 		Topic:     &topic,
+	// 		Partition: kafka.PartitionAny,
+	// 	},
+	// 	Value: []byte(jsonPayload)},
+	// 	delivery_chan,
+	// )
 	if err != nil {
 		fmt.Println("Error producing Kafka message: " + err.Error())
 	}

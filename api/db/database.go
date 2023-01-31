@@ -31,7 +31,7 @@ func Initialize(Dbdriver, DbLocation, DbPassword, DbPort, DbHost, DbName string)
 		fmt.Printf("We are connected to the %s database", Dbdriver)
 	}
 
-	db.Debug().AutoMigrate(&models.Location{})
+	db.Debug().AutoMigrate(&models.Location{}, &models.Connector{})
 
 	producer, _ := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers": "kafka-server:29092",

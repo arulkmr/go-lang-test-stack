@@ -11,7 +11,6 @@ import (
 )
 
 type Location struct {
-	gorm.Model
 	LocationId   string  `json:"locationid" gorm:"primaryKey"`
 	CustomerId   string  `gorm:"size:100;not null;" json:"customerid,omitempty"`
 	CustomerName string  `gorm:"size:100;not null;" json:"customername,omitempty"`
@@ -19,9 +18,9 @@ type Location struct {
 	Address      string  `gorm:"size:100;not null;" json:"address,omitempty"`
 	Lat          float64 `gorm:"size:100;not null;" json:"lat,omitempty"`
 	Long         float64 `gorm:"size:100;not null;" json:"long,omitempty"`
-	Connectors   []Connector
-	CreatedAt    time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
-	UpdatedAt    time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+	//Connectors   []Connector
+	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
 }
 
 type Connector struct {
@@ -29,6 +28,7 @@ type Connector struct {
 	ConnectorName string `gorm:"size:100;not null;" json:"connectorname,omitempty"`
 	ConnectorType string `gorm:"size:100;not null;" json:"connectortype,omitempty"`
 }
+
 type LocationQuery struct {
 	gorm.Model
 	CustomerNames []string `json:"customer_names,omitempty"`
